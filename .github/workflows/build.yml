@@ -1,0 +1,45 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build (Release)
+        run: dotnet build -c Release
+
+      - name: Stage Thunderstore package
+        run: |
+          mkdir -p dist/package/plugins
+          cp manifest.json icon.png README.md CHANGELOG.md THIRD_PARTY_LICENSES.md LICENSE dist/package/
+          cp bin/Release/Iron.ImprovedBeltBag.dll dist/package/plugins/
+          version=$(grep -oP '"version_number":\s*"\K[^"]+' manifest.json)
+          cd dist/package && zip -r "../ImprovedBeltBag-${version}.zip" .
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ImprovedBeltBag
+          path: dist/ImprovedBeltBag-*.zip
+
+      - name: Attach to GitHub Release (on tag)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/ImprovedBeltBag-*.zip

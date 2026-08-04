@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <AssemblyName>Iron.ImprovedBeltBag</AssemblyName>
+    <Product>ImprovedBeltBag</Product>
+    <Version>1.0.0</Version>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <RootNamespace>ImprovedBeltBag</RootNamespace>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <!-- Publicized game assemblies emit IgnoresAccessChecksTo, so this is required. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BepInEx.Core" Version="5.*" />
+    <PackageReference Include="UnityEngine.Modules" Version="2022.3.62" IncludeAssets="compile" PrivateAssets="all" />
+
+    <!-- Publicizes the game assemblies so we can reach Netcode RPC internals
+         (__rpc_exec_stage, tryingAddToBag, IsOwner, __beginSendClientRpc, ...). -->
+    <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.*" PrivateAssets="all" />
+
+    <!-- Stripped + publicized Lethal Company game assemblies (incl. Unity.Netcode). Compile-time only.
+         Match the version to your game build; "81.0.0-*" floats to the newest 81.x prerelease. -->
+    <PackageReference Include="LethalCompany.GameLibs.Steam" Version="81.0.0-*" PrivateAssets="all" Publicize="true" />
+  </ItemGroup>
+
+</Project>
