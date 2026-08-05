@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.1
+- Fix: the Easter Egg category now matches the actual "EasterEgg" collectible by name (was mistakenly matching the Kiwi egg).
+
 ## 1.1.0
 - Added a separate `Easter Egg` category (off by default) so the Kiwi egg (laid by the
   Giant Kiwi) has its own Allow + Max, apart from generic scrap.

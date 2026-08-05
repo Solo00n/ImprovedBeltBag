@@ -1,6 +1,6 @@
 {
   "name": "ImprovedBeltBag",
-  "version_number": "1.1.0",
+  "version_number": "1.1.1",
   "website_url": "https://github.com/Solo00n/ImprovedBeltBag",
   "description": "Configurable belt bags: choose which item types they hold (tools, shotgun, knife, signs, scrap) with per-type limits, capacity, weight, and a resizable slot grid. Host-authoritative.",
   "dependencies": [

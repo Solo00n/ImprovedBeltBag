@@ -15,7 +15,7 @@ namespace ImprovedBeltBag
     {
         public const string PLUGIN_GUID = "Iron.ImprovedBeltBag";
         public const string PLUGIN_NAME = "ImprovedBeltBag";
-        public const string PLUGIN_VERSION = "1.1.0";
+        public const string PLUGIN_VERSION = "1.1.1";
 
         internal static Plugin Instance { get; private set; }
         internal static ManualLogSource Log { get; private set; }

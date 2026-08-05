@@ -56,7 +56,7 @@ namespace ImprovedBeltBag
             CategoryConfigs[SignsCategory] = new CategoryConfig(cfg, SignsCategory, allowDefault: true,
                 "Stop sign / Yield sign.");
             CategoryConfigs[EasterEggCategory] = new CategoryConfig(cfg, EasterEggCategory, allowDefault: false,
-                "The Kiwi egg (the \"Easter egg\" laid by the Giant Kiwi). OFF by default.");
+                "The Easter egg (the \"EasterEgg\" collectible). OFF by default.");
             CategoryConfigs[OneHandedScrapCategory] = new CategoryConfig(cfg, OneHandedScrapCategory, allowDefault: false,
                 "Generic ONE-handed sellable scrap / metal loot (not knife/signs). OFF by default. " +
                 "Use 'Max Amount' to cap how many one-handed junk items fit.");
