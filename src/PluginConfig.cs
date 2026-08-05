@@ -21,6 +21,7 @@ namespace ImprovedBeltBag
         internal const string ShotgunCategory = "Shotgun";
         internal const string KnifeCategory = "Knife";
         internal const string SignsCategory = "Signs";
+        internal const string EasterEggCategory = "Easter Egg";
         internal const string OneHandedScrapCategory = "One Handed Scrap";
         internal const string TwoHandedScrapCategory = "Two Handed Scrap";
         internal const string DenyCategory = "Deny";
@@ -54,6 +55,8 @@ namespace ImprovedBeltBag
                 "The Kitchen knife.");
             CategoryConfigs[SignsCategory] = new CategoryConfig(cfg, SignsCategory, allowDefault: true,
                 "Stop sign / Yield sign.");
+            CategoryConfigs[EasterEggCategory] = new CategoryConfig(cfg, EasterEggCategory, allowDefault: false,
+                "The Kiwi egg (the \"Easter egg\" laid by the Giant Kiwi). OFF by default.");
             CategoryConfigs[OneHandedScrapCategory] = new CategoryConfig(cfg, OneHandedScrapCategory, allowDefault: false,
                 "Generic ONE-handed sellable scrap / metal loot (not knife/signs). OFF by default. " +
                 "Use 'Max Amount' to cap how many one-handed junk items fit.");
@@ -196,6 +199,7 @@ namespace ImprovedBeltBag
             if (ItemClassifier.IsShotgun(grabbable)) return CategoryConfigs[ShotgunCategory];
             if (ItemClassifier.IsKnife(grabbable)) return CategoryConfigs[KnifeCategory];
             if (ItemClassifier.IsSign(grabbable)) return CategoryConfigs[SignsCategory];
+            if (ItemClassifier.IsEasterEgg(grabbable)) return CategoryConfigs[EasterEggCategory];
             if (!grabbable.itemProperties.isScrap) return CategoryConfigs[ToolsCategory];
             if (!grabbable.itemProperties.twoHanded) return CategoryConfigs[OneHandedScrapCategory];
             return CategoryConfigs[TwoHandedScrapCategory];

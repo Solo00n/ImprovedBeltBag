@@ -13,6 +13,10 @@ namespace ImprovedBeltBag
 
         public static bool IsKnife(GrabbableObject g) => HasClass(g, "KnifeItem") || NameContains(g, "knife");
 
+        // The Kiwi egg ("Easter egg") laid by the Giant Kiwi. A plain grabbable prop (no AI of
+        // its own — the mama kiwi is the AI), so it is safe to store, unlike the Maneater.
+        public static bool IsEasterEgg(GrabbableObject g) => HasClass(g, "KiwiBabyItem") || NameContains(g, "egg");
+
         public static bool IsSign(GrabbableObject g)
         {
             string n = Name(g);
