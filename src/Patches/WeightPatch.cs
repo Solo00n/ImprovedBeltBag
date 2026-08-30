@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using GameNetcodeStuff;
 using HarmonyLib;
+using ImprovedBeltBag.Utils;
 using UnityEngine;
 
 namespace ImprovedBeltBag.Patches
@@ -33,10 +34,15 @@ namespace ImprovedBeltBag.Patches
         [HarmonyPatch(typeof(BeltBagItem), "OnDisable")]
         private static void AfterOnDisable(BeltBagItem __instance) => Remove(__instance);
 
+        private static bool WeightActive(BeltBagItem bag)
+            => BeltBagPatch.Enabled
+               && PluginConfig.Enabled.Value
+               && PluginConfig.WeightEnabled.Value
+               && VanillaBeltBag.IsManaged(bag);
+
         private static float DesiredWeight(BeltBagItem bag)
         {
-            if (!BeltBagPatch.Enabled || !PluginConfig.Enabled.Value || !PluginConfig.WeightEnabled.Value)
-                return 0f;
+            if (!WeightActive(bag)) return 0f;
             if (bag.playerHeldBy == null || bag.objectsInBag == null)
                 return 0f;
 
@@ -55,8 +61,7 @@ namespace ImprovedBeltBag.Patches
             if (bag == null) return;
             var st = Applied.GetOrCreateValue(bag);
 
-            var holder = (BeltBagPatch.Enabled && PluginConfig.Enabled.Value && PluginConfig.WeightEnabled.Value)
-                ? bag.playerHeldBy : null;
+            var holder = WeightActive(bag) ? bag.playerHeldBy : null;
             float desired = holder != null ? DesiredWeight(bag) : 0f;
 
             // Remove stale application (holder changed, weight changed, or now zero).

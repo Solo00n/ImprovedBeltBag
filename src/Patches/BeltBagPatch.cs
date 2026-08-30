@@ -34,6 +34,7 @@ namespace ImprovedBeltBag.Patches
         private static bool ItemInteractLeftRight_Prefix(BeltBagItem __instance, bool right)
         {
             if (!Enabled || !PluginConfig.Enabled.Value) return true; // vanilla
+            if (!VanillaBeltBag.IsManaged(__instance)) return true;   // another mod's bag
 
             try
             {
@@ -148,6 +149,7 @@ namespace ImprovedBeltBag.Patches
         private static void OnPutInBag(BeltBagItem __instance, GrabbableObject gObject, ref bool __state)
         {
             if (__state) return; // was already in the bag (see prefix below)
+            if (!VanillaBeltBag.IsManaged(__instance)) return;
             var inner = Memory.GetOrCreateValue(__instance);
             inner.GetOrCreateValue(PluginConfig.CategoryOf(gObject)).Count += 1;
         }
@@ -164,6 +166,7 @@ namespace ImprovedBeltBag.Patches
         [HarmonyPatch(typeof(BeltBagItem), nameof(BeltBagItem.RemoveFromBagLocalClientNonElevatorParent))]
         private static void OnRemoveFromBag(BeltBagItem __instance, NetworkObjectReference objectRef)
         {
+            if (!VanillaBeltBag.IsManaged(__instance)) return;
             var inner = Memory.GetOrCreateValue(__instance);
             if (objectRef.TryGet(out var no) && no.TryGetComponent<GrabbableObject>(out var g))
             {
@@ -180,6 +183,7 @@ namespace ImprovedBeltBag.Patches
         private static bool EnforceOnServer(BeltBagItem __instance, NetworkObjectReference netObjectRef, int playerWhoAdded)
         {
             if (!Enabled || !PluginConfig.Enabled.Value) return true;
+            if (!VanillaBeltBag.IsManaged(__instance)) return true;   // another mod enforces its own bag
             if (!__instance.IsRpcServerStage()) return true; // only the server's execution
             if (!netObjectRef.TryGet(out var no)) return true;
 
@@ -216,8 +220,9 @@ namespace ImprovedBeltBag.Patches
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(BeltBagItem), nameof(BeltBagItem.CancelAddObjectToBagClientRpc))]
-        private static void OnServerRefusal(int playerWhoAdded)
+        private static void OnServerRefusal(BeltBagItem __instance, int playerWhoAdded)
         {
+            if (!VanillaBeltBag.IsManaged(__instance)) return;
             if (StartOfRound.Instance == null) return;
             if (StartOfRound.Instance.allPlayerScripts[playerWhoAdded] != GameNetworkManager.Instance.localPlayerController)
                 return;

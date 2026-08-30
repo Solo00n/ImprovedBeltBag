@@ -1,5 +1,6 @@
 using System.Text;
 using HarmonyLib;
+using ImprovedBeltBag.Utils;
 using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
@@ -31,10 +32,13 @@ namespace ImprovedBeltBag.Patches
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(BeltBagInventoryUI), nameof(BeltBagInventoryUI.FillSlots))]
-        private static void BeforeFillSlots(BeltBagInventoryUI __instance)
+        private static void BeforeFillSlots(BeltBagInventoryUI __instance, BeltBagItem __0)
         {
             if (!BeltBagPatch.Enabled || !PluginConfig.Enabled.Value || !PluginConfig.ResizeSlotUI.Value)
                 return;
+            // The panel is shared by every bag, so only lay it out for the bags we manage; the
+            // mod that owns a custom bag sizes the grid for it.
+            if (!VanillaBeltBag.IsManaged(__0)) return;
 
             try { EnsureSlots(__instance); }
             catch (System.Exception e) { Plugin.Log.LogError($"Belt bag UI resize failed (harmless): {e}"); }

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.0
+- Compatibility: the mod now only manages the **vanilla** belt bag. Mods that add their own belt
+  bag do it by cloning the vanilla prefab, so their bag carries the same `BeltBagItem` component
+  and every patch here used to apply to it as well — silently rejecting its items, double-counting
+  its weight and resizing its slot grid. The vanilla bag is now identified once at startup and
+  everything else is left to the mod that owns it.
+
 ## 1.1.1
 - Fix: the Easter Egg category now matches the actual "EasterEgg" collectible by name (was mistakenly matching the Kiwi egg).
 

@@ -23,6 +23,13 @@ validated **server-side** against the host's config. A lone modded client in a v
 lobby gets no advantage, and clients can't exceed the host's limits. Vanilla clients can
 still join.
 
+## Compatibility with other belt bag mods
+
+This mod only touches the **vanilla** belt bag. Mods that add their own bag do it by cloning
+the vanilla prefab, so their bag runs the same code and would otherwise be caught by every
+patch here — having its items rejected, its weight counted twice and its slot grid resized.
+The vanilla bag is identified once at startup, and any other bag is left to the mod that owns it.
+
 ## Install
 1. Install **BepInEx 5** (BepInExPack for Lethal Company).
 2. Put `Iron.ImprovedBeltBag.dll` in `Lethal Company/BepInEx/plugins/`.
