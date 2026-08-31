@@ -45,7 +45,8 @@ The vanilla bag is identified once at startup, and any other bag is left to the 
 | Items | `Per-Item Overrides` | `Body: Deny, Apparatus: Deny` | `ItemName: Category` map. |
 | Category.\* | `Allow` / `Max Amount` | — | Per-category toggle + cap. Tools/Shotgun/Knife/Signs on; scrap off. |
 | Weight | `Enabled` / `Multiplier` | `true` / `1.0` | Contents add weight. |
-| Misc | `Grab Range` / `Tooltips` / `Empty Bag Action` | `4` / on / on | |
+| Misc | `Grab Range` / `Tooltips` / `Empty Bag Action` | `4` / on / on | Empty is a **double tap** of right-interact (E). |
+| Misc | `Empty Bag Double Tap Window` | `0.4` | Seconds the second press has to land in. |
 | Host | `Enforce Capacity` / `Restrictions` / `Range` | on | Server-side checks. |
 
 ## Credits

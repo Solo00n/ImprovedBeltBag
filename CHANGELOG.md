@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.0
+- Emptying the bag now takes a **double tap** of right-interact (E) instead of a single press.
+  The key sits next to the ones you use constantly and the action throws away everything inside,
+  so one press only arms it and shows a tip; a second press within `Empty Bag Double Tap Window`
+  (0.4s by default, configurable) actually empties it. Holding the key never empties the bag.
+
 ## 1.2.0
 - Compatibility: the mod now only manages the **vanilla** belt bag. Mods that add their own belt
   bag do it by cloning the vanilla prefab, so their bag carries the same `BeltBagItem` component

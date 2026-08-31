@@ -83,11 +83,33 @@ namespace ImprovedBeltBag.Patches
                 Tip($"Cannot store any more {PluginConfig.CategoryOf(target).CategoryName} in the bag!");
         }
 
+        // Time of the press that armed the dump, so a second one can confirm it.
+        private static float _dumpArmedAt;
+
+        /// <summary>
+        /// Emptying the bag throws away everything inside it, and the key sits right next to the
+        /// ones you use constantly — so it takes a deliberate double tap. The first press only
+        /// arms it; a second within the window does it.
+        ///
+        /// This also rules out a held key for free: the game raises QEItemInteract once per
+        /// press, so holding the key produces exactly one call, same as a single tap.
+        /// </summary>
         private static void TryDumpItems(BeltBagItem bag)
         {
             if (!PluginConfig.DropAll.Value) return;
             if (bag.playerHeldBy == null || bag.playerHeldBy.currentlyHeldObjectServer != bag) return;
-            bag.StartCoroutine(EmptyBag(bag));
+            if (bag.objectsInBag.Count == 0) return;
+
+            float now = Time.realtimeSinceStartup;
+            if (now - _dumpArmedAt <= PluginConfig.DropAllDoubleTap.Value)
+            {
+                _dumpArmedAt = 0f; // consumed, so a third tap starts a fresh pair
+                bag.StartCoroutine(EmptyBag(bag));
+                return;
+            }
+
+            _dumpArmedAt = now;
+            Tip("Press again to empty the bag.");
         }
 
         private static IEnumerator EmptyBag(BeltBagItem bag)

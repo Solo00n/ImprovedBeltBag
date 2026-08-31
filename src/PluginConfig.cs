@@ -81,7 +81,11 @@ namespace ImprovedBeltBag
             Tooltip = cfg.Bind("Misc", "Tooltips", true,
                 "Show a HUD tip when an item can't be stored (full / not allowed / limit reached).");
             DropAll = cfg.Bind("Misc", "Empty Bag Action", true,
-                "Right-interact while holding the bag empties it onto the ground.");
+                "Double-tap right-interact (E) while holding the bag to empty it onto the ground.");
+            DropAllDoubleTap = cfg.Bind("Misc", "Empty Bag Double Tap Window", 0.4f,
+                new ConfigDescription("How quickly the second press must follow the first, in seconds. " +
+                    "Emptying the bag is destructive and the key is easy to brush, so one press only arms it.",
+                    new AcceptableValueRange<float>(0.1f, 1.5f)));
 
             // ---- Host enforcement (server-side, authoritative) ----
             EnforceCapacity = cfg.Bind("Host", "Enforce Capacity", true,
@@ -120,6 +124,7 @@ namespace ImprovedBeltBag
         internal static ConfigEntry<float> GrabRange;
         internal static ConfigEntry<bool> Tooltip;
         internal static ConfigEntry<bool> DropAll;
+        internal static ConfigEntry<float> DropAllDoubleTap;
 
         // ---- Host ----
         internal static ConfigEntry<bool> EnforceCapacity;
