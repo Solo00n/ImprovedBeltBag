@@ -20,6 +20,19 @@ namespace ImprovedBeltBag.Patches
     {
         internal static bool Enabled;
 
+        // One line per distinct outcome, so a single run tells us exactly which gate is in play.
+        private static string _lastDiag;
+        private static void Diag(BeltBagItem bag, string reason)
+        {
+            string id = bag != null && bag.itemProperties != null
+                ? $"\"{bag.itemProperties.itemName}\" itemId={bag.itemProperties.itemId} hash={bag.itemProperties.GetInstanceID()}"
+                : "<null>";
+            string line = reason + " | bag " + id;
+            if (line == _lastDiag) return;
+            _lastDiag = line;
+            Plugin.Log.LogInfo("[diag] interact -> " + line);
+        }
+
         // The Maneater / baby cave dweller — a live AI that soft-locks if bagged (also blocked by vanilla).
         private const int ManeaterItemIdA = 123984;
         private const int ManeaterItemIdB = 819501;
@@ -33,8 +46,18 @@ namespace ImprovedBeltBag.Patches
         [HarmonyPatch(typeof(BeltBagItem), nameof(BeltBagItem.ItemInteractLeftRight))]
         private static bool ItemInteractLeftRight_Prefix(BeltBagItem __instance, bool right)
         {
-            if (!Enabled || !PluginConfig.Enabled.Value) return true; // vanilla
-            if (!VanillaBeltBag.IsManaged(__instance)) return true;   // another mod's bag
+            if (!Enabled || !PluginConfig.Enabled.Value)
+            {
+                Diag(__instance, !Enabled ? "host gate: Enabled=false (host has no mod / not set)"
+                                          : "config [General] Enabled=false");
+                return true; // vanilla
+            }
+            if (!VanillaBeltBag.IsManaged(__instance))
+            {
+                Diag(__instance, "not the managed vanilla bag (VanillaBeltBag.IsManaged=false)");
+                return true;   // another mod's bag
+            }
+            Diag(__instance, "ACTIVE - this mod is handling this bag");
 
             try
             {

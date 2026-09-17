@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using HarmonyLib;
 using Unity.Netcode;
 
@@ -19,11 +20,16 @@ namespace ImprovedBeltBag.Utils
     [HarmonyPatch]
     internal static class VanillaBeltBag
     {
+        private const string VanillaItemName = "Belt bag";
+
         private static Item _vanillaItem;
         private static bool _captured;
 
+        // One verdict per Item: the interact, weight and UI paths ask this constantly.
+        private static readonly Dictionary<Item, bool> KnownItems = new Dictionary<Item, bool>();
+
         [HarmonyPrefix]
-        [HarmonyPriority(Priority.First)]
+        [HarmonyPriority(int.MaxValue)] // must beat mods that register their bag here (ScrapSack uses 800)
         [HarmonyPatch(typeof(GameNetworkManager), "Start")]
         private static void CaptureBeforeModsRegister() => Capture();
 
@@ -35,6 +41,9 @@ namespace ImprovedBeltBag.Utils
             var prefabs = NetworkManager.Singleton?.NetworkConfig?.Prefabs?.Prefabs;
             if (prefabs != null)
             {
+                Item firstItem = null, namedVanilla = null;
+                int seen = 0;
+
                 foreach (var entry in prefabs)
                 {
                     var go = entry?.Prefab;
@@ -43,8 +52,28 @@ namespace ImprovedBeltBag.Utils
                     var bag = go.GetComponent<BeltBagItem>();
                     if (bag == null || bag.itemProperties == null) continue;
 
-                    _vanillaItem = bag.itemProperties;
-                    Plugin.Log.LogInfo($"Vanilla belt bag identified as \"{_vanillaItem.itemName}\".");
+                    seen++;
+                    var item = bag.itemProperties;
+                    Plugin.Log.LogInfo($"[diag] belt bag prefab #{seen}: item=\"{item.itemName}\" " +
+                                       $"itemId={item.itemId} hash={item.GetInstanceID()} prefab={go.name}");
+
+                    if (firstItem == null) firstItem = item;
+                    if (namedVanilla == null && item.itemName == VanillaItemName) namedVanilla = item;
+                }
+
+                // Normally only the game's own bag exists at this point. If a mod got in first we
+                // still prefer the one carrying the vanilla name over blind "first wins".
+                if (seen > 1)
+                    Plugin.Log.LogWarning(
+                        $"{seen} belt bag prefabs were already registered before this mod looked; " +
+                        "another mod registers its bag very early. Falling back to the one named " +
+                        $"\"{VanillaItemName}\".");
+
+                _vanillaItem = namedVanilla ?? firstItem;
+                if (_vanillaItem != null)
+                {
+                    Plugin.Log.LogInfo($"Vanilla belt bag identified as \"{_vanillaItem.itemName}\" " +
+                                       $"(itemId={_vanillaItem.itemId} hash={_vanillaItem.GetInstanceID()}).");
                     return;
                 }
             }
@@ -62,7 +91,32 @@ namespace ImprovedBeltBag.Utils
         {
             if (bag == null) return false;
             if (_vanillaItem == null) return true;
-            return ReferenceEquals(bag.itemProperties, _vanillaItem);
+
+            var props = bag.itemProperties;
+            if (props == null) return false;
+            if (ReferenceEquals(props, _vanillaItem)) return true;
+
+            if (KnownItems.TryGetValue(props, out bool managed)) return managed;
+
+            managed = IsCopyOfVanilla(props);
+            KnownItems[props] = managed;
+            if (managed)
+                Plugin.Log.LogInfo(
+                    $"\"{props.itemName}\" is a copy of the vanilla belt bag made by another mod; managing it too.");
+            return managed;
         }
+
+        /// <summary>
+        /// True for the copies of the vanilla bag that appear when a mod turns store items into
+        /// scrap to be found on a moon — Remnants is the common one.
+        ///
+        /// Those go through LethalLib, which clones the Item field by field and hands the clone a
+        /// prefab of its own, so the bag lying on the floor is a different Item than the one the
+        /// shop sells and a plain reference check leaves it running on bare vanilla rules. What a
+        /// clone does keep is the id and the name it was copied from, and that pair is enough to
+        /// tell it apart: a mod that adds a bag of its own gives it an id of its own.
+        /// </summary>
+        private static bool IsCopyOfVanilla(Item props)
+            => props.itemId == _vanillaItem.itemId && props.itemName == _vanillaItem.itemName;
     }
 }

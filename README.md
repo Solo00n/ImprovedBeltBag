@@ -30,6 +30,10 @@ the vanilla prefab, so their bag runs the same code and would otherwise be caugh
 patch here — having its items rejected, its weight counted twice and its slot grid resized.
 The vanilla bag is identified once at startup, and any other bag is left to the mod that owns it.
 
+A belt bag **found on a moon** counts as the vanilla bag. Mods that turn store items into scrap
+build those through LethalLib, which clones the item, so the found bag is recognised by the id
+and name it inherited rather than by identity.
+
 ## Install
 1. Install **BepInEx 5** (BepInExPack for Lethal Company).
 2. Put `Iron.ImprovedBeltBag.dll` in `Lethal Company/BepInEx/plugins/`.

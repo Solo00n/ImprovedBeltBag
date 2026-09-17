@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.0
+- Belt bags **found on a moon** are now managed too. Mods that turn store items into scrap
+  (Remnants) build them through LethalLib, which clones the Item and gives the clone its own
+  prefab — so a found bag was a different Item than the one the shop sells, slipped past the
+  vanilla-bag check added in 1.2.0 and ran on bare vanilla rules: no categories, no capacity,
+  no weight. A clone keeps the id and name it was copied from, which is what identifies it now.
 ## 1.3.0
 - Emptying the bag now takes a **double tap** of right-interact (E) instead of a single press.
   The key sits next to the ones you use constantly and the action throws away everything inside,
